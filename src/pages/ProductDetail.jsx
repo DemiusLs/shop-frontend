@@ -5,7 +5,7 @@ import styles from './ProductDetail.module.css';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { FaBalanceScale } from 'react-icons/fa';
 import ProductCarousel from '../components/ProductCarousel';
-import fetchFilteredPrints from '../services/filterPrints.js';
+import fetchFilteredPrints from '../functions/filterPrints.js';
 import axios from 'axios';
 import TooltipPortal from '../components/TooltipPortal.jsx';
 

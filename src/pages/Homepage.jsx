@@ -4,7 +4,7 @@ import { useAppContext } from "../context/AppContext";
 import WelcomePopup from "../components/WelcomePopup"
 import ProductCarousel from "../components/ProductCarousel"
 import styles from './Homepage.module.css';
-import fetchFilteredPrints from '../services/filterPrints';
+import fetchFilteredPrints from '../functions/filterPrints';
 
 
 

@@ -25,13 +25,8 @@ const ProductCard = ({ product, showWishlistButton = true, viewMode = 'grid' }) 
     }
 
     addToCart({
-      slug: product.slug,
-      name: product.name,
-      price: product.price,
-      img_url: product.img_url,
-      discount: product.discount,
-      quantity: 1,
-      stock: product.stock
+      ...product,
+      quantity: 1
     });
   };
 

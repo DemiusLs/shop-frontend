@@ -4,7 +4,7 @@ import { useAppContext } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import ProductFilters from '../components/ProductFilters';
 import styles from './Gallery.module.css';
-import fetchFilteredPrints from '../services/filterPrints';
+import fetchFilteredPrints from '../functions/filterPrints';
 
 const Gallery = () => {
   const { viewMode, sortBy, products } = useAppContext();

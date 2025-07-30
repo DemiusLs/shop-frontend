@@ -1,19 +1,21 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
 import Alert from '../components/Alert';
+import fetchProducts from '../functions/fetch';
+import useCart from '../functions/useCart';
+import useWishList from '../functions/useWishList';
 
 
 
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-    const [wishlist, setWishlist] = useState([]);
+    
     const [searchParams] = useSearchParams();
     const initialViewMode = searchParams.get('view') || 'grid';
     const initialSortBy = searchParams.get('sort') || 'newest';
     const [products, setProducts] = useState([]);
-    const [cart, setCart] = useState([]);
+    
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [showWelcomePopup, setShowWelcomePopup] = useState(true);
@@ -27,41 +29,29 @@ export const AppProvider = ({ children }) => {
     const [alertType, setAlertType] = useState('success');
 
 
-    //chiamata axios per prendere le stampe
-    const fetchProducts = async () => {
-        setIsLoading(true);
-        try {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/prints`);
-            if (res.data.data) {
-                setProducts(res.data.data);
-            } else {
-                setError('Dati non validi');
-            }
-        } catch {
-            setError('Errore nel caricamento');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    
+
+
     //useeffect per settare il local storage
     useEffect(() => {
-        fetchProducts();
+
+        fetchProducts(setProducts, setIsLoading, setError);
         const visited = localStorage.getItem('boolshop_visited');
         if (visited) {
             setShowWelcomePopup(false);
         }
-        const savedWishlist = localStorage.getItem('wishlist');
-        if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+        
 
-        const savedCart = localStorage.getItem('cart');
-        if (savedCart) setCart(JSON.parse(savedCart));
+        
     }, []);
 
-    //useffect all'attivazione del cambio dello stato della wishlist
-    useEffect(() => {
-        localStorage.setItem('wishlist', JSON.stringify(wishlist));
-    }, [wishlist]);
 
+    const cart = useCart(); 
+    const wishlist = useWishList();
+
+
+    //useffect all'attivazione del cambio dello stato della wishlist
+   
 
     //funzione componente ALERT
     const showAlert = (message, type = 'success') => {
@@ -71,109 +61,7 @@ export const AppProvider = ({ children }) => {
     };
 
 
-    //funzione di aggiunta al carrello
-    const addToCart = (product) => {
-        console.log(product);
-
-        setCart(prevCart => {
-            const existing = prevCart.find(item => item.slug === product.slug);
-
-            const existingQuantity = existing ? existing.quantity : 0;
-            const totalRequested = existingQuantity + product.quantity;
-
-            if (totalRequested > product.stock) {
-                showAlert(
-                    `Hai superato la quantità disponibile per "${product.name}". Disponibili: ${product.stock}`,
-                    'error'
-                );
-                return prevCart;
-            } else {
-                showAlert(`${product.name} aggiunto al carrello!`, 'success');
-            }
-
-            if (existing) {
-                return prevCart.map(item =>
-                    item.slug === product.slug
-                        ? { ...item, quantity: item.quantity + product.quantity }
-                        : item
-                );
-            }
-
-            return [
-                ...prevCart,
-                {
-                    slug: product.slug,
-                    name: product.name,
-                    price: product.price,
-                    discount: product.discount,
-                    img_url: product.img_url,
-                    quantity: product.quantity,
-                    maxStock: product.stock
-                },
-            ];
-        });
-    };
-
-
-
-    //funzione di rimozione dal carrello
-    const removeFromCart = (productSlug) => {
-        setCart(prevCart => prevCart.filter(item => item.slug !== productSlug));
-    };
-
-
-    //funzione di cancellazione carrello
-    const clearCart = () => {
-        setCart([]);
-    };
-
-    useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cart));
-    }, [cart]);
-
-
-    //funzione di cambio stato del cuoricino wishlist
-    const toggleWishlist = (product) => {
-        setWishlist(prev => {
-            const exists = prev.find(item => item.slug === product.slug);
-            if (exists) {
-                return prev.filter(item => item.slug !== product.slug);
-            } else {
-                return [...prev, product];
-            }
-        });
-    };
-
-
-    //funzione di controllo se prodotto già interno alla wishlist
-    const isInWishlist = (product) => {
-        if (!product) return false; // protezione se product è null/undefined
-        return wishlist.some(item => item.slug === product.slug);
-    };
-
-
-    //funzione di aggiunta alla wishlist
-    const addToWishlist = (product) => {
-        setWishlist(prev => {
-            if (!prev.find(item => item.slug === product.slug)) {
-                return [...prev, product];
-            }
-            return prev; // se già presente, non aggiunge
-        });
-    };
-
-
-    //funzione di rimozione della wishlist
-    const removeFromWishlist = (productSlug) => {
-        setWishlist(prev => prev.filter(item => item.slug !== productSlug));
-    };
-
-
-    //funzione di una completa rimozione della wishlist
-    const clearWishlist = () => {
-        setWishlist([]);
-        localStorage.removeItem('wishlist'); // opzionale: se la salvi su localStorage
-    };
+   
 
 
     //funzioni per il confronto prodotti, fatte solamente per esercizio ma non per funzionalità poichè non possiamo confrontare due prodotti d'arte
@@ -205,31 +93,23 @@ export const AppProvider = ({ children }) => {
 
     const value = {
         products,
-        setProducts,
-        cart,
-        setCart,
+        setProducts,        
         isLoading,
         error,
         showWelcomePopup,
         showAlert,
         sortBy,
         viewMode,
-        addToCart,
-        removeFromCart,
-        clearCart,
         setSortBy,
         setViewMode,
         hideWelcomePopup: () => setShowWelcomePopup(false),
-        wishlist,
-        toggleWishlist,
-        isInWishlist,
-        addToWishlist,
-        removeFromWishlist,
         compareList,
         addToCompare,
         removeFromCompare,
         clearWishlist,
         showPopup,
+        ...cart,
+        ...wishlist,
     };
 
     return (
