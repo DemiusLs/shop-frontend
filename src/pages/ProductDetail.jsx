@@ -36,7 +36,7 @@ const ProductDetail = () => {
   const wishlistButtonRef = useRef(null);
 
 
-  const isWishlisted = product && wishlist.some(item => item.slug === product.slug);
+  const isProductInWishlist = product && wishlist.some(item => item.slug === product.slug);
   const isInCompareList = product && compareList?.some(item => item.slug === product.slug);
 
 
@@ -104,16 +104,7 @@ const ProductDetail = () => {
   }
 
 
-  if (!product) {
-    return (
-      <div className={styles.notFound}>
-        <h2>Prodotto non trovato</h2>
-        <button onClick={() => navigate('/gallery')} className={styles.backButton}>
-          Torna alla galleria
-        </button>
-      </div>
-    );
-  }
+
 
 
   const handleAddToCart = (e) => {
@@ -142,9 +133,15 @@ const ProductDetail = () => {
   };
 
   const handleWishList = (e) => {
+    e.preventDefault();
     e.stopPropagation();
-    toggleWishList(product)
+    toggleWishList(product);
 
+    if (isProductInWishlist) {
+      showAlert(`"${product.name}" rimosso dai preferiti.`, 'error');
+    } else {
+      showAlert(`"${product.name}" aggiunto ai preferiti!`, 'success');
+    }
   }
 
 
@@ -173,6 +170,18 @@ const ProductDetail = () => {
     product.img_url, // In a real app, these would be different images
     product.img_url
   ];
+
+  //empty state
+  if (!product) {
+    return (
+      <div className={styles.notFound}>
+        <h2>Prodotto non trovato</h2>
+        <button onClick={() => navigate('/gallery')} className={styles.backButton}>
+          Torna alla galleria
+        </button>
+      </div>
+    );
+  }
 
 
   return (
@@ -220,26 +229,26 @@ const ProductDetail = () => {
             </div>
 
             <h1 className={styles.productName}>{product.name}
-              <button ref={wishlistButtonRef} className={styles.wishlistButton} onClick={handleWishList}>
-                {isWishlisted ? (
-                  <FaHeart className={styles.heartIconFilled} />
-                ) : (
-                  <FaRegHeart className={styles.heartIconEmpty} />
-                )}
-              </button>
-              {/* Tooltip per la wishlist */}
-              <TooltipPortal targetRef={wishlistButtonRef}>
-                {isWishlisted ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}
-              </TooltipPortal>
-              {/* <button
-                className={styles.compareButton}
-                onClick={handleCompare}
-                title="Confronta"
-              >
-                <FaBalanceScale />
-              </button> */}
-
+              <div className={styles.wishlistIconContainer}>
+                <button
+                  ref={wishlistButtonRef} // Assegna il ref al bottone
+                  className={styles.wishlistIcon}
+                  onClick={handleWishList}
+                >
+                  {isProductInWishlist ?
+                    <FaHeart style={{ color: 'red' }} />
+                    :
+                    <FaRegHeart />
+                  }
+                </button>
+                {/* ✨ Renderizza il tooltip tramite il Portal, passando il ref al bottone del cuore */}
+                <TooltipPortal targetRef={wishlistButtonRef}>
+                  {isProductInWishlist ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}
+                </TooltipPortal>
+              </div>
             </h1>
+
+
             <p className={styles.productDescription}>{product.description}</p>
 
             <div className={styles.priceContainer}>

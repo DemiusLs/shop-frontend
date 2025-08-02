@@ -144,7 +144,7 @@
   padding: 0;
   cursor: pointer;
   font-size: 1.5rem;
-  color: white; /* Colore di default per il cuore VUOTO (FaRegHeart) */
+  color: rgb(255, 255, 255); /* Colore di default per il cuore VUOTO (FaRegHeart) */
   transition: transform 0.2s;
   user-select: none;
   display: flex;
@@ -159,6 +159,18 @@
 .wishlistIcon svg {
   fill: currentColor;
 }
+
+.cardList .wishlistIcon{
+  color: #000;
+}
+
+
+
+
+
+
+
+
 
 /* ✨ RIMUOSSE TUTTE LE REGOLE RELATIVE A .tooltipText DA QUI */
 

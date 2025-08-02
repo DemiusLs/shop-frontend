@@ -37,7 +37,22 @@ const ProductCard = ({ product, showWishlistButton = true, viewMode = 'grid' }) 
     }).format(price);
   };
 
+  //wishlist const and funciotns
   const isProductInWishlist = wishlist.some(item => item.slug === product.slug);
+  const handleWishList = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishList(product);
+
+    if (isProductInWishlist) {
+      showAlert(`"${product.name}" rimosso dai preferiti.`, 'error');
+    } else {
+      showAlert(`"${product.name}" aggiunto ai preferiti!`, 'success');
+    }
+  }
+
+
+
 
   return (
     <Link to={`/product/${product.slug}`} className={`${styles.card} ${viewMode === 'list' ? styles.cardList : ''}`}>
@@ -47,17 +62,7 @@ const ProductCard = ({ product, showWishlistButton = true, viewMode = 'grid' }) 
           <button
             ref={wishlistButtonRef} // Assegna il ref al bottone
             className={styles.wishlistIcon}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              toggleWishList(product);
-
-              if (isProductInWishlist) {
-                showAlert(`"${product.name}" rimosso dai preferiti.`, 'error');
-              } else {
-                showAlert(`"${product.name}" aggiunto ai preferiti!`, 'success');
-              }
-            }}
+            onClick={handleWishList}
           >
             {isProductInWishlist ?
               <FaHeart style={{ color: 'red' }} />
@@ -70,7 +75,8 @@ const ProductCard = ({ product, showWishlistButton = true, viewMode = 'grid' }) 
             {isProductInWishlist ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}
           </TooltipPortal>
         </div>
-      )}
+      )
+      }
 
       <div className={styles.imageContainer}>
         <img
@@ -124,7 +130,7 @@ const ProductCard = ({ product, showWishlistButton = true, viewMode = 'grid' }) 
           </button>
         </div>
       </div>
-    </Link>
+    </Link >
   );
 };
 
