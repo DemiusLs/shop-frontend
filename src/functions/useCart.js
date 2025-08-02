@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 // import useAlert from './useAlert';
 
-const useCart = () => {
+const useCart = (showAlert) => {
 
     const [cart, setCart] = useState([]);
     // const { console.log } = useAlert();
@@ -25,13 +25,13 @@ const useCart = () => {
             const total = existingQuantity + product.quantity;
 
             if (total > product.stock) {
-                console.log(
+                showAlert(
                     `Hai superato la quantità disponibile per "${product.name}". Disponibili: ${product.stock}`,
                     'error'
                 );
                 return prevCart;
             } else {
-                console.log(`${product.name} aggiunto al carrello!`, 'success');
+                showAlert(`${product.name} aggiunto al carrello!`, 'success');
             }
 
             if (existing) {

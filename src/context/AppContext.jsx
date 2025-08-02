@@ -4,32 +4,25 @@ import Alert from '../components/Alert';
 import fetchProducts from '../functions/fetch';
 import useCart from '../functions/useCart';
 import useWishList from '../functions/useWishList';
+import useAlert from "../functions/useAlert"
+import useCompare from '../functions/useCompare';
 
 
 
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-    
+
     const [searchParams] = useSearchParams();
     const initialViewMode = searchParams.get('view') || 'grid';
     const initialSortBy = searchParams.get('sort') || 'newest';
     const [products, setProducts] = useState([]);
-    
+
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [showWelcomePopup, setShowWelcomePopup] = useState(true);
     const [sortBy, setSortBy] = useState(initialSortBy);
     const [viewMode, setViewMode] = useState(initialViewMode);
-    const [compareList, setCompareList] = useState([]);
-
-    // variabili useState per componente ALERT
-    const [alertVisible, setAlertVisible] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
-    const [alertType, setAlertType] = useState('success');
-
-
-    
 
 
     //useeffect per settare il local storage
@@ -40,52 +33,16 @@ export const AppProvider = ({ children }) => {
         if (visited) {
             setShowWelcomePopup(false);
         }
-        
 
-        
     }, []);
 
-
-    const cart = useCart(); 
-    const wishlist = useWishList();
-
-
-    //useffect all'attivazione del cambio dello stato della wishlist
-   
-
-    //funzione componente ALERT
-    const showAlert = (message, type = 'success') => {
-        setAlertMessage(message);
-        setAlertType(type);
-        setAlertVisible(true);
-    };
+    const alert = useAlert();
+    const cart = useCart(alert.showAlert);
+    const wishlist = useWishList(alert.showAlert);
+    const compare = useCompare(alert.showAlert);
 
 
-   
 
-
-    //funzioni per il confronto prodotti, fatte solamente per esercizio ma non per funzionalità poichè non possiamo confrontare due prodotti d'arte
-    // aggiungi prodotto a confronto
-    const addToCompare = (product) => {
-        setCompareList((prev) => {
-            if (prev.find(p => p.slug === product.slug)) {
-                showAlert(`${product.name} è già presente nella lista di confronto.`, `error`);
-                return prev;
-            }
-            if (prev.length >= 3) {
-                showAlert("Puoi confrontare al massimo 3 prodotti.", `error`);
-                return prev;
-            }
-            showAlert(`${product.name} aggiunto alla lista di confronto.`);
-            return [...prev, product];
-        });
-    };
-
-
-    // rimuovi prodotto da confronto
-    const removeFromCompare = (slug) => {
-        setCompareList(prev => prev.filter(p => p.slug !== slug));
-    };
 
     const showPopup = (message, type = 'success') => {
         setPopup({ message, type });
@@ -93,23 +50,20 @@ export const AppProvider = ({ children }) => {
 
     const value = {
         products,
-        setProducts,        
+        setProducts,
         isLoading,
         error,
         showWelcomePopup,
-        showAlert,
         sortBy,
         viewMode,
         setSortBy,
         setViewMode,
         hideWelcomePopup: () => setShowWelcomePopup(false),
-        compareList,
-        addToCompare,
-        removeFromCompare,
-        clearWishlist,
         showPopup,
         ...cart,
         ...wishlist,
+        ...alert,
+        ...compare,
     };
 
     return (
@@ -118,9 +72,9 @@ export const AppProvider = ({ children }) => {
 
             {/* ALERT GLOBALE */}
             <Alert
-                message={alertMessage}
-                visible={alertVisible}
-                type={alertType}
+                message={alert.message}
+                visible={alert.visible}
+                type={alert.type}
                 onClose={() => setAlertVisible(false)}
             />
         </AppContext.Provider>

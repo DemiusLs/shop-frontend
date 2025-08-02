@@ -29,12 +29,12 @@ const Wishlist = () => {
           )}
         </div>
 
-        {wishlist.length === 0 ? (
+        {wishlist === undefined ? (
           <p className={styles.empty}>Nessun prodotto nella lista preferiti.</p>
         ) : (
           <>
             <div className={styles.grid}>
-              {wishlist.map((product) => (
+              { wishlist.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}

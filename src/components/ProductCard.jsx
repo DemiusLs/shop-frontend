@@ -7,7 +7,7 @@ import TooltipPortal from './TooltipPortal';
 
 const ProductCard = ({ product, showWishlistButton = true, viewMode = 'grid' }) => {
 
-  const { addToCart, cart, wishlist = [], toggleWishlist, showAlert } = useAppContext();
+  const { addToCart, cart, wishlist = [], toggleWishList, showAlert } = useAppContext();
   const wishlistButtonRef = useRef(null); // Crea un ref per il bottone del cuore
 
   const handleAddToCart = (e) => {
@@ -50,7 +50,7 @@ const ProductCard = ({ product, showWishlistButton = true, viewMode = 'grid' }) 
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              toggleWishlist(product);
+              toggleWishList(product);
 
               if (isProductInWishlist) {
                 showAlert(`"${product.name}" rimosso dai preferiti.`, 'error');

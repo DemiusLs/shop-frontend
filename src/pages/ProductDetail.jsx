@@ -18,6 +18,7 @@ const ProductDetail = () => {
     wishlist,
     addToWishlist,
     removeFromWishlist,
+    toggleWishList,
     compareList,
     addToCompare,
     removeFromCompare,
@@ -38,17 +39,8 @@ const ProductDetail = () => {
   const isWishlisted = product && wishlist.some(item => item.slug === product.slug);
   const isInCompareList = product && compareList?.some(item => item.slug === product.slug);
 
-  //logo per aggiunta o rimozione dalla wishlist
-  const toggleWishlist = () => {
-    if (!product) return;  // evita errori se product non è ancora caricato
 
-    if (isWishlisted) {
-      removeFromWishlist(product.slug);
-    } else {
-      addToWishlist(product);
-    }
-  };
-  // logo per inserire in comparazione prodotto
+  //logo per inserire in comparazione prodotto
   const handleCompare = () => {
     if (!product) return;
 
@@ -149,6 +141,12 @@ const ProductDetail = () => {
     showAlert(`${product.name} aggiunto al carrello!`);
   };
 
+  const handleWishList = (e) => {
+    e.stopPropagation();
+    toggleWishList(product)
+
+  }
+
 
 
   /**
@@ -176,8 +174,6 @@ const ProductDetail = () => {
     product.img_url
   ];
 
-
-  console.log(product)
 
   return (
     <div className={styles.productDetail}>
@@ -224,7 +220,7 @@ const ProductDetail = () => {
             </div>
 
             <h1 className={styles.productName}>{product.name}
-              <button ref={wishlistButtonRef} className={styles.wishlistButton} onClick={toggleWishlist}>
+              <button ref={wishlistButtonRef} className={styles.wishlistButton} onClick={handleWishList}>
                 {isWishlisted ? (
                   <FaHeart className={styles.heartIconFilled} />
                 ) : (
